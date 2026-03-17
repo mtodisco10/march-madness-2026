@@ -25,6 +25,7 @@ const REGION_DISPLAY_NAMES = {
 };
 
 const MOBILE_REGION_ORDER = ["W", "Z", "X", "Y"];
+const MOBILE_FINALS_KEY = "FINALS";
 
 function seedNum(seed) {
   const m = seed.match(/\d+/);
@@ -318,10 +319,10 @@ function renderMobileRegionControls() {
   const wrap = document.createElement("section");
   wrap.className = "mobile-region-controls";
 
-  MOBILE_REGION_ORDER.forEach((region) => {
+  [...MOBILE_REGION_ORDER, MOBILE_FINALS_KEY].forEach((region) => {
     const btn = document.createElement("button");
     btn.className = `mobile-region-btn ${state.mobileRegion[state.tab] === region ? "active" : ""}`;
-    btn.textContent = REGION_DISPLAY_NAMES[region];
+    btn.textContent = region === MOBILE_FINALS_KEY ? "FINAL FOUR" : REGION_DISPLAY_NAMES[region];
     btn.onclick = () => {
       state.mobileRegion[state.tab] = region;
       render();
@@ -344,10 +345,14 @@ function render() {
     mobileLayout.className = "mobile-layout";
 
     mobileLayout.appendChild(renderMobileRegionControls());
-    mobileLayout.appendChild(
-      renderRegion(state.mobileRegion[state.tab], regionDirection(state.mobileRegion[state.tab]), tournament),
-    );
-    mobileLayout.appendChild(renderCenter(tournament));
+
+    if (state.mobileRegion[state.tab] === MOBILE_FINALS_KEY) {
+      mobileLayout.appendChild(renderCenter(tournament));
+    } else {
+      mobileLayout.appendChild(
+        renderRegion(state.mobileRegion[state.tab], regionDirection(state.mobileRegion[state.tab]), tournament),
+      );
+    }
 
     app.appendChild(mobileLayout);
     return;
