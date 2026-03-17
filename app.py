@@ -5,8 +5,8 @@ from functools import lru_cache
 import pandas as pd
 import streamlit as st
 
-SEASON = 2025
-SUBMISSION_PATH = "submission_2025.csv"
+SEASON = 2026
+SUBMISSION_PATH = "submission_2026.csv"
 
 TOURNAMENT_CONFIG = {
     "mens": {
@@ -23,6 +23,13 @@ TOURNAMENT_CONFIG = {
         "slots_path": "data/WNCAATourneySlots.csv",
         "team_name_col": "TeamName",
     },
+}
+
+REGION_DISPLAY_NAMES = {
+    "W": "EAST",
+    "X": "SOUTH",
+    "Y": "MIDWEST",
+    "Z": "WEST",
 }
 
 
@@ -364,7 +371,8 @@ def render_round_column(region: str, round_num: int, title: str, tournament_key:
 
 
 def render_region(region: str, tournament_key: str, t_data: dict, direction: str):
-    st.markdown(f"<div class='region-title'>Region {region}</div>", unsafe_allow_html=True)
+    region_label = REGION_DISPLAY_NAMES.get(region, region)
+    st.markdown(f"<div class='region-title'>{region_label}</div>", unsafe_allow_html=True)
     # Keep all round columns the same width for visual consistency.
     if direction == "ltr":
         c1, c2, c3, c4, c5, c6, c7 = st.columns([3.0, 0.55, 3.0, 0.55, 3.0, 0.55, 3.0])
@@ -423,7 +431,7 @@ def render_tournament_tab(tournament_key: str, t_data: dict):
     if state_key not in st.session_state:
         st.session_state[state_key] = {}
 
-    st.caption("Pick winners through all rounds. Regions W/Y flow left-to-right, X/Z flow right-to-left.")
+    st.caption("Pick winners through all rounds. EAST/SOUTH flow left-to-right, WEST/MIDWEST flow right-to-left.")
     if st.button("Clear picks", key=f"clear_{tournament_key}"):
         st.session_state[state_key] = {}
 
@@ -432,7 +440,7 @@ def render_tournament_tab(tournament_key: str, t_data: dict):
     with left_col:
         render_region("W", tournament_key, t_data, "ltr")
         st.markdown("<div class='v-gap-md'></div>", unsafe_allow_html=True)
-        render_region("Y", tournament_key, t_data, "ltr")
+        render_region("X", tournament_key, t_data, "ltr")
 
     with middle_col:
         st.markdown("<div class='v-gap-lg'></div>", unsafe_allow_html=True)
@@ -445,15 +453,15 @@ def render_tournament_tab(tournament_key: str, t_data: dict):
         render_center_champion(tournament_key)
 
     with right_col:
-        render_region("X", tournament_key, t_data, "rtl")
-        st.markdown("<div class='v-gap-md'></div>", unsafe_allow_html=True)
         render_region("Z", tournament_key, t_data, "rtl")
+        st.markdown("<div class='v-gap-md'></div>", unsafe_allow_html=True)
+        render_region("Y", tournament_key, t_data, "rtl")
 
 
 def main():
     st.set_page_config(page_title="March Madness Bracket Picker", layout="wide")
     inject_bracket_css()
-    st.title("March Madness 2025 Bracket Picker")
+    st.title("March Madness 2026 Bracket Picker")
     st.write(
         "First-round 64-team view only. Men and Women are split into separate tabs. "
         "Prediction values are shown inline with each team."

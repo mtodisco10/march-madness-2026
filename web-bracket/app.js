@@ -7,11 +7,24 @@ const ORDER = {
 const state = {
   data: null,
   tab: "mens",
+  mobileRegion: {
+    mens: "W",
+    womens: "W",
+  },
   winners: {
     mens: {},
     womens: {},
   },
 };
+
+const REGION_DISPLAY_NAMES = {
+  W: "EAST",
+  X: "SOUTH",
+  Y: "MIDWEST",
+  Z: "WEST",
+};
+
+const MOBILE_REGION_ORDER = ["W", "Z", "X", "Y"];
 
 function seedNum(seed) {
   const m = seed.match(/\d+/);
@@ -101,11 +114,6 @@ function createCard(slot, t1, t2, selectedId, tournament, x, y, cardW) {
   card.style.top = `${y}px`;
   card.style.width = `${cardW}px`;
 
-  const slotDiv = document.createElement("div");
-  slotDiv.className = "card-slot";
-  slotDiv.textContent = slot;
-  card.appendChild(slotDiv);
-
   const b1 = document.createElement("button");
   b1.className = `pick-btn ${selectedId === (t1 && t1.id) ? "selected" : ""}`;
   b1.textContent = teamLabel(t1, t2, tournament);
@@ -165,7 +173,7 @@ function renderRegion(region, direction, tournament) {
 
   const title = document.createElement("h3");
   title.className = "region-title";
-  title.textContent = `Region ${region}`;
+  title.textContent = REGION_DISPLAY_NAMES[region] || region;
   regionWrap.appendChild(title);
 
   const board = document.createElement("div");
@@ -244,13 +252,6 @@ function renderCenter(tournament) {
   inner.className = "center-inner";
   center.appendChild(inner);
 
-  const addRoundLabel = (text) => {
-    const label = document.createElement("div");
-    label.className = "center-round-label";
-    label.textContent = text;
-    inner.appendChild(label);
-  };
-
   const addConnector = () => {
     const conn = document.createElement("div");
     conn.className = "center-connector";
@@ -263,7 +264,7 @@ function renderCenter(tournament) {
 
     const h = document.createElement("div");
     h.className = "center-title";
-    h.textContent = `${title} (${slot})`;
+    h.textContent = title;
 
     const [t1, t2] = getMatchup(slot, tournament, winners);
     const selected = winners[slot] ? winners[slot].id : null;
@@ -288,13 +289,10 @@ function renderCenter(tournament) {
     inner.appendChild(wrap);
   };
 
-  addRoundLabel("ROUND 5");
   addSlot("R5WX", "FINAL FOUR");
   addConnector();
-  addRoundLabel("ROUND 6");
   addSlot("R6CH", "CHAMPIONSHIP");
   addConnector();
-  addRoundLabel("ROUND 5");
   addSlot("R5YZ", "FINAL FOUR");
 
   const champ = winners.R6CH;
@@ -308,11 +306,52 @@ function renderCenter(tournament) {
   return center;
 }
 
+function isMobileLayout() {
+  return window.innerWidth <= 768;
+}
+
+function regionDirection(region) {
+  return region === "W" || region === "X" ? "ltr" : "rtl";
+}
+
+function renderMobileRegionControls() {
+  const wrap = document.createElement("section");
+  wrap.className = "mobile-region-controls";
+
+  MOBILE_REGION_ORDER.forEach((region) => {
+    const btn = document.createElement("button");
+    btn.className = `mobile-region-btn ${state.mobileRegion[state.tab] === region ? "active" : ""}`;
+    btn.textContent = REGION_DISPLAY_NAMES[region];
+    btn.onclick = () => {
+      state.mobileRegion[state.tab] = region;
+      render();
+    };
+    wrap.appendChild(btn);
+  });
+
+  return wrap;
+}
+
 function render() {
   const app = document.getElementById("app");
   app.innerHTML = "";
 
   const tournament = state.data.tournaments[state.tab];
+  const mobile = isMobileLayout();
+
+  if (mobile) {
+    const mobileLayout = document.createElement("div");
+    mobileLayout.className = "mobile-layout";
+
+    mobileLayout.appendChild(renderMobileRegionControls());
+    mobileLayout.appendChild(
+      renderRegion(state.mobileRegion[state.tab], regionDirection(state.mobileRegion[state.tab]), tournament),
+    );
+    mobileLayout.appendChild(renderCenter(tournament));
+
+    app.appendChild(mobileLayout);
+    return;
+  }
 
   const layout = document.createElement("div");
   layout.className = "tournament-layout";
@@ -320,14 +359,14 @@ function render() {
   const left = document.createElement("div");
   left.className = "region-stack";
   left.appendChild(renderRegion("W", "ltr", tournament));
-  left.appendChild(renderRegion("Y", "ltr", tournament));
+  left.appendChild(renderRegion("X", "ltr", tournament));
 
   const center = renderCenter(tournament);
 
   const right = document.createElement("div");
   right.className = "region-stack";
-  right.appendChild(renderRegion("X", "rtl", tournament));
   right.appendChild(renderRegion("Z", "rtl", tournament));
+  right.appendChild(renderRegion("Y", "rtl", tournament));
 
   layout.appendChild(left);
   layout.appendChild(center);
@@ -353,7 +392,7 @@ function setupControls() {
 }
 
 async function init() {
-  const res = await fetch("./bracket_data_2025.json");
+  const res = await fetch("./bracket_data_2026.json");
   state.data = await res.json();
   setupControls();
   render();

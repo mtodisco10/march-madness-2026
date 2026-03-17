@@ -65,6 +65,32 @@ body {
   margin-top: 10px;
 }
 
+.mobile-layout {
+  display: grid;
+  gap: 10px;
+}
+
+.mobile-region-controls {
+  display: none;
+}
+
+.mobile-region-btn {
+  border: 1px solid #cbd5e1;
+  background: var(--card);
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.mobile-region-btn.active {
+  background: #dbeafe;
+  border-color: #93c5fd;
+  color: #1e3a8a;
+}
+
 .tournament-layout {
   display: grid;
   grid-template-columns: 1fr 180px 1fr;
@@ -245,6 +271,57 @@ body {
   }
   .center-inner {
     position: static;
+    min-height: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .page {
+    padding: 8px;
+  }
+
+  .header h1 {
+    font-size: 18px;
+  }
+
+  .controls {
+    flex-wrap: wrap;
+  }
+
+  .clear-btn {
+    margin-left: 0;
+  }
+
+  .mobile-region-controls {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .region {
+    padding: 5px;
+  }
+
+  .region-board {
+    height: 620px;
+  }
+
+  .card {
+    min-height: 42px;
+    padding: 2px;
+  }
+
+  .pick-btn {
+    font-size: 8px;
+    height: 16px;
+    padding: 3px 2px;
+  }
+
+  .center-col {
+    min-height: 0;
+  }
+
+  .center-inner {
     min-height: 0;
   }
 }

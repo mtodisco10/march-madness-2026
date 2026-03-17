@@ -26,7 +26,7 @@ Then open:
 
 ## Rebuild Data
 
-If `submission_2025.csv` or source CSVs change:
+If your submission CSV or source CSVs change:
 
 ```bash
 python web-bracket/build_bracket_data.py
@@ -34,7 +34,14 @@ python web-bracket/build_bracket_data.py
 
 This generates:
 
-- `web-bracket/bracket_data_2025.json`
+- `web-bracket/bracket_data.json`
+- `web-bracket/bracket_data_<season>.json`
+
+Optional overrides:
+
+```bash
+MM_SUBMISSION_PATH=submission_2026.csv MM_SEASON=2026 python web-bracket/build_bracket_data.py
+```
 
 ## Notes
 

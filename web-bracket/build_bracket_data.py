@@ -5,8 +5,9 @@ from pathlib import Path
 
 import pandas as pd
 
-SEASON = 2025
 ROOT = Path(__file__).resolve().parents[1]
+SUBMISSION_PATH = ROOT / "submission_2026.csv"
+SEASON = 2026
 
 TOURNAMENTS = {
     "mens": {
@@ -74,7 +75,7 @@ def build_visual_slot_map():
 
 
 def load_submission_lookup():
-    submission = pd.read_csv(ROOT / "submission_2025.csv")
+    submission = pd.read_csv(SUBMISSION_PATH)
     parts = submission["ID"].str.split("_", expand=True)
     submission["Season"] = parts[0].astype(int)
     submission["TeamLow"] = parts[1].astype(int)
@@ -155,9 +156,15 @@ def main():
     for key, cfg in TOURNAMENTS.items():
         payload["tournaments"][key] = build_tournament(cfg, pred_lookup)
 
-    out_path = Path(__file__).resolve().parent / "bracket_data_2025.json"
-    out_path.write_text(json.dumps(payload), encoding="utf-8")
-    print(f"Wrote {out_path}")
+    out_dir = Path(__file__).resolve().parent
+    season_out_path = out_dir / f"bracket_data_{SEASON}.json"
+    stable_out_path = out_dir / "bracket_data.json"
+    payload_json = json.dumps(payload)
+
+    season_out_path.write_text(payload_json, encoding="utf-8")
+    stable_out_path.write_text(payload_json, encoding="utf-8")
+    print(f"Wrote {season_out_path}")
+    print(f"Wrote {stable_out_path}")
 
 
 if __name__ == "__main__":
