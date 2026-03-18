@@ -265,7 +265,7 @@ function renderCenter(tournament) {
 
     const h = document.createElement("div");
     h.className = "center-title";
-    h.textContent = title;
+    h.textContent = slot === "R6CH" ? `${title} 🏆` : title;
 
     const [t1, t2] = getMatchup(slot, tournament, winners);
     const selected = winners[slot] ? winners[slot].id : null;

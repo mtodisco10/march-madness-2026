@@ -303,7 +303,7 @@ body {
   }
 
   .region-board {
-    height: 620px;
+    height: 650px;
   }
 
   .card {
@@ -323,5 +323,9 @@ body {
 
   .center-inner {
     min-height: 0;
+  }
+
+  .mobile-layout {
+    padding-bottom: 12px;
   }
 }
